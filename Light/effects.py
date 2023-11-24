@@ -152,7 +152,7 @@ class WaveEffect(Effect):
   def __init__(self, name: str, pixels: list[Pixel]) -> None:
     super().__init__(name, pixels)
     self.last_update = 0
-    self.speed = 0.9
+    self.speed = 104
     self.size = 35
     self.center_x = 75
     self.center_y = 60
@@ -168,6 +168,8 @@ class WaveEffect(Effect):
   
   def update(self):
     now = time.time()
+    if self.last_update == 0:
+      self.last_update = now
     last_update = self.last_update
     self.last_update = now
 
@@ -188,7 +190,7 @@ class WaveEffect(Effect):
           self.b_buffer[index] = 0
         index += 1
     for i in range(0, len(self.wave_radii)):
-      self.wave_radii[i] += self.speed
+      self.wave_radii[i] += self.speed * (now - last_update)
     keep_radii = []
     for r in self.wave_radii:
       if r <= self.max_radius + 10:
@@ -204,5 +206,4 @@ class WaveEffect(Effect):
 
   def setup_dispatcher(self, dispatcher):
     super().setup_brightness_handler(dispatcher)
-    print(f"Warning: {str(self)} does not overwrite function 'setup_dispatcher'")
-
+    self.setup_trigger_handler(dispatcher)
