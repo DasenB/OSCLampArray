@@ -5,9 +5,9 @@ import PySimpleGUI as sg
 class LampSimulator:
 
     def __init__(self) -> list[Pixel]:
-        self.width = 18
-        self.height = 12
-        pixel_spacing = 9
+        self.width = 21
+        self.height = 14
+        pixel_spacing = 8.5
         pixels = []
         for x in range(0, self.width):
             for y in range(0, self.height):
@@ -33,7 +33,7 @@ class LampSimulator:
         for pixel in pixels:
             center = (self._zoom * pixel.x + self._zoom * 10, self._zoom * pixel.y + self._zoom * 10)
             color = '#%02x%02x%02x' % (pixel.r, pixel.g, pixel.b)
-            self._graph.draw_circle(center, pixel.diameter * self._zoom, fill_color = color, line_width = 0)
+            self._graph.draw_circle(center, pixel.diameter/2 * self._zoom, fill_color = color, line_width = 0)
         self._window.Read(timeout = 10)
 
         

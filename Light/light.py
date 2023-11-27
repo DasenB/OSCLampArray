@@ -5,6 +5,14 @@ import asyncio
 from pythonosc.osc_server import AsyncIOOSCUDPServer
 
 
+# for i in range(0, 14):
+#   x =  i * 1200/14 + 1200/14 * 0.5
+#   x *= 0.1
+#   print("%.3f" % x)
+
+# exit(0)
+
+
 async def LightshowTask():
   lamp = LampSimulator()
   lightshow = LightShow(lamp=lamp)

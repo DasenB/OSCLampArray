@@ -27,14 +27,18 @@ class DiscoLigt:
     
 
 def record_audio():
-    duration_s = 100 / 1000
+    duration_s = 40 / 1000
     sample_rate = 44100
-    gain = 35
+    gain = 20*10*10*10*35
     recording_size = int(duration_s * sample_rate)
     recording = sd.rec(recording_size, samplerate=sample_rate, channels=1, dtype='float64')
     sd.wait()
     recording = recording[:, 0]
-    frequencies = np.log(np.abs(rfft(recording))+1)*gain
+    frequencies = np.log(np.abs(rfft(recording)))*gain
+    
+    for i in range(0, len(frequencies)):
+        frequencies[i] = frequencies[i] / (len(frequencies) - i)**2
+
     return frequencies
 
 def draw_spectrogram():
