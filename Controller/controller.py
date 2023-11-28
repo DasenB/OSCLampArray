@@ -8,6 +8,21 @@ import numpy as np
 import math
 from scipy.fft import fft, fftfreq, rfft
 
+# from midi import MidiConnector
+
+# conn = MidiConnector('/dev/ttyACM0')
+
+# while True:
+#     msg = conn.read() 
+#     print(msg)
+
+import mido
+
+with mido.open_input(mido.get_output_names()[1]) as inport:
+    for msg in inport:
+        print(msg)
+
+
 class DiscoLigt:
     connection: udp_client
 
