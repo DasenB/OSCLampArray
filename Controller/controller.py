@@ -8,6 +8,23 @@ import numpy as np
 import math
 from scipy.fft import fft, fftfreq, rfft
 
+
+
+class ControlValue:
+    id: str
+    osc_path: str
+    midi_control_number: int
+    description: str
+
+class TriggerAction:
+    id: str
+    osc_path: str
+    midi_note_number: int
+    description: str
+
+
+
+
 # from midi import MidiConnector
 
 # conn = MidiConnector('/dev/ttyACM0')
