@@ -1,18 +1,30 @@
-from Controller import ControlValue, ControlAction
-import mido
+from Controller import Controller
+from Options import ValueOption, TriggerOption, OnOffOption
+from MidiDevice import MidiDevice
 
-with mido.open_input(mido.get_output_names()[1]) as inport:
-    for msg in inport:
-        print(msg)
+option_columns = []
 
-action_columns = []
+wave1_control = (
+    ValueOption("wave1/red", description="Wave 1 R"),
+    ValueOption("wave1/green", description="Wave 1 G"),
+    ValueOption("wave1/blue", description="Wave 1 B"),
+    ValueOption("wave1/master", description="Wave 1 Brightness"),
+    TriggerOption("wave1/trigger", description="Wave 1 Trigger"),
+    OnOffOption("wave1/mute", description="Wave 1 Mute"),
+)
+option_columns.append(wave1_control)
 
-wave_control = [
-    ControlValue("wave1/red", midi_control_number=14, description="R"),
-    ControlValue("wave1/green", midi_control_number=30, description="G"),
-    ControlValue("wave1/blue", midi_control_number=50, description="B"),
-    ControlValue("wave1/master", midi_control_number=76, description="Master"),
-    ControlAction("wave1/trigger", midi_note_number=42, description="Trigger"),
-    ControlAction("wave1/mute", midi_note_number=74, description="Mute"),
-]
-action_columns.append(wave_control)
+wave2_control = (
+    ValueOption("wave2/red", description="Wave 2 R"),
+    ValueOption("wave2/green", description="Wave 2 G"),
+    ValueOption("wave2/blue", description="Wave 2 B"),
+    ValueOption("wave2/master", description="Wave 2 Brightness"),
+    TriggerOption("wave2/trigger", description="Wave 2 Trigger"),
+    OnOffOption("wave2/mute", description="Wave 2 Mute"),
+)
+
+option_columns.append(wave2_control)
+
+
+c = Controller(midi_device=MidiDevice.NOVATION_LAUNCHCONTROL_XL, options=option_columns)
+c.run()
