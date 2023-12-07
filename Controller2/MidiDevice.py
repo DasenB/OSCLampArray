@@ -35,7 +35,7 @@ class MidiControllerColumn:
 
 class MidiDevice(Enum):
     NOVATION_LAUNCHCONTROL_XL = {
-        "name": "Launch Control XL:Launch Control XL Launch Contro 24:0",
+        "name": "Launch Control XL:Launch Control XL Launch Contro 28:0",
         "channels": (
             MidiControllerColumn(midi_ids=(13, 29, 49, 77, 41, 73), control_options=None),
             MidiControllerColumn(midi_ids=(14, 30, 50, 78, 42, 74), control_options=None),

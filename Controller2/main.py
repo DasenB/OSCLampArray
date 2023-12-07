@@ -1,6 +1,8 @@
 from Controller import Controller
 from Options import ValueOption, TriggerOption, OnOffOption
 from MidiDevice import MidiDevice
+import sounddevice as sd
+
 
 option_columns = []
 
@@ -24,7 +26,5 @@ wave2_control = (
 )
 
 option_columns.append(wave2_control)
-
-
 c = Controller(midi_device=MidiDevice.NOVATION_LAUNCHCONTROL_XL, options=option_columns)
 c.run()
