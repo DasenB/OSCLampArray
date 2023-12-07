@@ -25,4 +25,10 @@ let
     #  };})
   ];
   my-python = pkgs.python310.withPackages my-python-packages;
-in my-python.env
+  # in my-python.env
+in pkgs.mkShell {
+  packages = [
+    pkgs.usbutils
+    (my-python.withPackages my-python-packages) # we have defined this in the installation section
+  ];
+}

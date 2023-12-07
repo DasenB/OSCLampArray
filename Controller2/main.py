@@ -1,8 +1,6 @@
 from Controller import Controller
 from Options import ValueOption, TriggerOption, OnOffOption
 from MidiDevice import MidiDevice
-import sounddevice as sd
-
 
 option_columns = []
 
