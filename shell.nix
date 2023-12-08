@@ -10,6 +10,7 @@ let
     scipy
     pyserial
     mido
+    pynput
     # ( buildPythonPackage {
     #   pname = "py-midi";
     #   version = "20.01";

@@ -11,16 +11,18 @@ from enum import Enum
 import math
 from Gui import Gui
 from Audio import Audio
+from Box import Box
 
 
 class Controller:
-    options: list[tuple[ValueOption, ValueOption, ValueOption, ValueOption, TriggerOption|OnOffOption, TriggerOption|OnOffOption]]
+    options: dict[str, tuple[ValueOption, ValueOption, ValueOption, ValueOption, TriggerOption|OnOffOption, TriggerOption|OnOffOption]]
     async_event_loop: any
 
     light_address: str
     light_port: int
     
     gui: Gui
+    boxes: list[Box]
 
     midi_port: mido.ports.IOPort
     midi_device: dict[str, any]
@@ -29,17 +31,20 @@ class Controller:
     audio: Audio
 
 
-    def __init__(self, midi_device: MidiDevice, options: list[tuple[ValueOption, ValueOption, ValueOption, ValueOption, TriggerOption|OnOffOption, TriggerOption|OnOffOption]]) -> None:
+    def __init__(self, midi_device: MidiDevice, boxes: list[Box], options: dict[str, tuple[ValueOption, ValueOption, ValueOption, ValueOption, TriggerOption|OnOffOption, TriggerOption|OnOffOption]]) -> None:
         self.midi_device = midi_device.value
         self.options = options
         self.midi_mapping = {}
         self.midi_port = None
+        self.boxes = boxes
+        
         self.gui = Gui(controller=self)
         self.audio = Audio()
 
-        for index in range(min(len(self.options), len(self.midi_device["channels"]))):
+        for index in range(min(len(self.options.keys()), len(self.midi_device["channels"]))):
             midi_controller_column = self.midi_device["channels"][index]
-            option_tuple = self.options[index]
+            option_name = list(self.options.keys())[index]
+            option_tuple = self.options[option_name]
             midi_controller_column.change_mapping(option_tuple)
             self.midi_mapping.update(midi_controller_column.mapping)
 
@@ -106,9 +111,15 @@ class Controller:
     async def midi_loop(self):
         port_is_open = False
         self.midi_port = None
+        device_name = self.midi_device["name_prefix"] + self.midi_device["name_suffix"]
+        for name in mido.get_ioport_names():
+            if name.startswith(self.midi_device["name_prefix"]) and name.endswith(self.midi_device["name_suffix"]):
+                device_name = name
+                break
+
         while True:
             await asyncio.sleep(0.001)
-            midi_device_connected = self.midi_device["name"] in mido.get_ioport_names()
+            midi_device_connected = device_name in mido.get_ioport_names()
             if self.midi_port is None and port_is_open:
                 port_is_open = False
             if not midi_device_connected and port_is_open:
@@ -118,7 +129,7 @@ class Controller:
             if not midi_device_connected and not port_is_open:
                 continue
             if midi_device_connected and not port_is_open:
-                self.midi_port = mido.open_input(self.midi_device["name"])
+                self.midi_port = mido.open_input(device_name)
                 port_is_open = True
                 # await asyncio.sleep(2)
                 # for msg in port.iter_pending():
