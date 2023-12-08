@@ -10,30 +10,33 @@ import sys
 from enum import Enum
 import math
 from Gui import Gui
-
+from Audio import Audio
 
 
 class Controller:
     options: list[tuple[ValueOption, ValueOption, ValueOption, ValueOption, TriggerOption|OnOffOption, TriggerOption|OnOffOption]]
-    midi_device: dict[str, any]
+    async_event_loop: any
+
     light_address: str
     light_port: int
-    midi_mapping: dict[int, Option]
-    sound_queue: deque
-    audio_stream: sd.InputStream
+    
     gui: Gui
+
     midi_port: mido.ports.IOPort
-    async_event_loop: any
+    midi_device: dict[str, any]
+    midi_mapping: dict[int, Option]
+
+    audio: Audio
 
 
     def __init__(self, midi_device: MidiDevice, options: list[tuple[ValueOption, ValueOption, ValueOption, ValueOption, TriggerOption|OnOffOption, TriggerOption|OnOffOption]]) -> None:
         self.midi_device = midi_device.value
         self.options = options
         self.midi_mapping = {}
-        self.sound_queue = deque([], maxlen = 10000)
         self.midi_port = None
         self.gui = Gui(controller=self)
-        self.counter = 0
+        self.audio = Audio()
+
         for index in range(min(len(self.options), len(self.midi_device["channels"]))):
             midi_controller_column = self.midi_device["channels"][index]
             option_tuple = self.options[index]
@@ -50,18 +53,12 @@ class Controller:
             return
         if key not in self.midi_mapping:
             return
-        
-        # self.counter += 1
-        # print(self.counter)
         option_handler = self.midi_mapping[key]
         option_handler.update(midi_event)
         print(option_handler.id + " " + str(option_handler.value))
 
-    def process_gui_event(self, gui_event):
-        print(gui_event)
-
     def run(self):
-        self.start_sound()
+        self.audio.start()
         self.async_event_loop = asyncio.get_event_loop()
         self.async_event_loop.create_task(self.midi_loop())
         self.async_event_loop.create_task(self.gui_loop())
@@ -79,11 +76,8 @@ class Controller:
                 self.async_event_loop.stop()
                 self.async_event_loop.close()
                 self.async_event_loop = None
-            if self.audio_stream is not None:
-                self.audio_stream.stop()
-                self.audio_stream.close()
-                self.audio_stream = None
-                sd.stop()
+            if self.audio is not None:
+                self.audio.stop()
             if self.gui is not None:
                 self.gui.stop()
             if self.midi_port is not None:
@@ -100,9 +94,9 @@ class Controller:
     async def gui_loop(self):
         while True:
             await asyncio.sleep(0.001)
-            if(len(self.sound_queue) < self.sound_queue.maxlen):
+            audio_data = self.audio.get_data()
+            if audio_data is None:
                 continue
-            audio_data = np.array(self.sound_queue)
             left,right = np.split(np.abs(np.fft.fft(audio_data)), 2)
             ys = np.add(left,right[::-1])
             ys = np.multiply(40, np.log10(ys))
@@ -132,17 +126,7 @@ class Controller:
             for midi_event in self.midi_port.iter_pending():
                 self.process_midi_event(midi_event)
 
-
-    def start_sound(self):
-        def callback(indata: np.ndarray, outdata: np.ndarray, frames: int, time: any, status: any) -> None:
-            if status:
-                print("Sound Error")
-                return
-            outdata[:] = indata
-            self.sound_queue.extend(indata[:, 0])
-           
-        self.audio_stream = sd.Stream(blocksize=512, callback=callback, dtype='float32', channels=1, latency=0.005)
-        self.audio_stream.start()
+        
 
 
         
