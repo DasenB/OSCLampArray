@@ -37,18 +37,57 @@ class Gui:
         ]
         midi_settings_layout = [
             [
-                sg.Col([[sg.Text("Channel 1")], [sg.Text("Channel 2")], [sg.Text("Channel 3")], [sg.Text("Channel 4")]]),
-                sg.Col([[sg.Combo(option_columns, default_value=option_columns[0], size=(30, 1))], [sg.Combo(option_columns, default_value=option_columns[1], size=(30, 1))], [sg.Combo(option_columns, default_value=option_columns[2], size=(30, 1))], [sg.Combo(option_columns, default_value=option_columns[3], size=(30, 1))]]),
+                sg.Col([
+                    [sg.Text("Channel 1")], 
+                    [sg.Text("Channel 2")], 
+                    [sg.Text("Channel 3")], 
+                    [sg.Text("Channel 4")]
+                ]),
+                sg.Col([
+                    [sg.Combo(option_columns, default_value="", size=(15, 1), key="midi_settings_channel_1")],
+                    [sg.Combo(option_columns, default_value="", size=(15, 1), key="midi_settings_channel_2")],
+                    [sg.Combo(option_columns, default_value="", size=(15, 1), key="midi_settings_channel_3")],
+                    [sg.Combo(option_columns, default_value="", size=(15, 1), key="midi_settings_channel_4")]
+                ]),
                 sg.VSeparator(),
-                sg.Col([[sg.Text("Channel 5")], [sg.Text("Channel 6")], [sg.Text("Channel 7")], [sg.Text("Channel 8")]]),
-                sg.Col([[sg.Combo(option_columns, default_value=option_columns[4], size=(30, 1))], [sg.Combo(option_columns, default_value=option_columns[5], size=(30, 1))], [sg.Combo(option_columns, default_value=option_columns[6], size=(30, 1))], [sg.Combo(option_columns, default_value=option_columns[7], size=(30, 1))]]),
+                sg.Col([
+                    [sg.Text("Channel 5")],
+                    [sg.Text("Channel 6")],
+                    [sg.Text("Channel 7")],
+                    [sg.Text("Channel 8")]
+                ]),
+                sg.Col([
+                    [sg.Combo(option_columns, default_value="", size=(15, 1), key="midi_settings_channel_5")],
+                    [sg.Combo(option_columns, default_value="", size=(15, 1), key="midi_settings_channel_6")],
+                    [sg.Combo(option_columns, default_value="", size=(15, 1), key="midi_settings_channel_7")],
+                    [sg.Combo(option_columns, default_value="", size=(15, 1), key="midi_settings_channel_8")]
+                ]),
             ],
             [sg.Button(button_text="Cancel", key="cancel-midi-settings"), sg.Button(button_text="Save", key="save-midi-settings")]           
         ]
+        osc_history_layout = [
+            [sg.Text(text="", key="osc_history_0", pad=((5, 0), (0, 0)), font=("Mono", 10, "normal"))],
+            [sg.Text(text="", key="osc_history_1", pad=((5, 0), (0, 0)), font=("Mono", 10, "normal"))],
+            [sg.Text(text="", key="osc_history_2", pad=((5, 0), (0, 0)), font=("Mono", 10, "normal"))],
+            [sg.Text(text="", key="osc_history_3", pad=((5, 0), (0, 0)), font=("Mono", 10, "normal"))],
+            [sg.Text(text="", key="osc_history_4", pad=((5, 0), (0, 0)), font=("Mono", 10, "normal"))],
+            [sg.Text(text="", key="osc_history_5", pad=((5, 0), (0, 0)), font=("Mono", 10, "normal"))],
+            [sg.Text(text="", key="osc_history_6", pad=((5, 0), (0, 0)), font=("Mono", 10, "normal"))],
+            [sg.Text(text="", key="osc_history_7", pad=((5, 0), (0, 0)), font=("Mono", 10, "normal"))],
+            [sg.Text(text="", key="osc_history_8", pad=((5, 0), (0, 0)), font=("Mono", 10, "normal"))],
+            [sg.Text(text="", key="osc_history_9", pad=((5, 0), (0, 0)), font=("Mono", 10, "normal"))]
+        ]
         self.layout  = [
-            [sg.Col([[ sg.Graph(canvas_size=self.canvas_size, graph_bottom_left=(0, 0), graph_top_right=self.canvas_size, background_color='grey', enable_events=True, key='graph')]], vertical_alignment='center', justification='center' )],
-            [sg.Frame(title="Box Settings", layout=box_settings_layout, size=(400, 230)), 
-             sg.Frame(title="MIDI Settings", layout=midi_settings_layout, size=(650, 230))]
+            [
+                sg.Col(
+                    [[ sg.Graph(canvas_size=self.canvas_size, graph_bottom_left=(0, 0), graph_top_right=self.canvas_size, background_color='grey', enable_events=True, key='graph')]], vertical_alignment='center', justification='center'
+                )
+            ],
+            [
+                sg.Frame(title="Box Settings", layout=box_settings_layout, size=(370, 235)), 
+                sg.Frame(title="MIDI Settings", layout=midi_settings_layout, size=(470, 235)),
+                sg.Frame(title="OSC History", layout=osc_history_layout, size=(470, 235))
+            ]
         ]
         self.window = sg.Window('Window Title', self.layout, element_justification='c', finalize=True, return_keyboard_events=True)
         
@@ -60,46 +99,19 @@ class Gui:
         self.dragged_boxes = []
         self.boxes = self.controller.boxes
         self.display_box_setting_view()
+        self.display_midi_setting_view()
 
         listener = keyboard.Listener(on_press=self.on_press,on_release=self.on_release)
         listener.start()
         self.shift_state = False
         self.alt_state = False
     
-        
-
-    def draw_audio(self, frequencies: list[int]) -> None:
-        self.canvas_size = self.graph.CanvasSize
-        width = self.canvas_size[0]
-        height = self.canvas_size[1]
-        bar_width = width/len(frequencies)
-        xpos_left = 0
-        self.graph.erase()
-        for box in self.boxes:
-            top_right = (box.position[0] + box.size[0], box.position[1] + box.size[1])
-            fill_color = "#000000"
-            if box.disabled:
-                fill_color = "#505050"
-            self.graph.draw_rectangle(box.position, top_right, fill_color=fill_color)
-        for value in frequencies:
-            self.graph.draw_rectangle((xpos_left, 0), (xpos_left + bar_width, value), fill_color='white', line_color='white')
-            xpos_left += bar_width
-        for box in self.boxes:
-            top_right = (box.position[0] + box.size[0], box.position[1] + box.size[1])
-            border_color = "pink"
-            if not box.selected and not box.disabled:
-                border_color = "#94b8f2"
-            if box.selected and not box.disabled:
-                border_color = "#1756e8"
-            if box.selected and box.disabled:
-                border_color = "#ff0000"
-            if not box.selected and box.disabled:
-                border_color = "#f29894"
-            self.graph.draw_rectangle(box.position, top_right, line_color=border_color)
+    def update_box_values(self, frequencies: list[int], bar_width: float) -> None:
         for box in self.boxes:
             if box.disabled:
                 box.value = 0
                 continue
+            old_box_value = box.value
             box.value = 0
             box_min_x = float(box.position[0])
             box_min_y = float(box.position[1])
@@ -131,8 +143,55 @@ class Gui:
             if box_area == 0:
                 box.value = 0
             else:
-                box.value *= 127
+                box.value *= 2*127
                 box.value /= box_area
+            if box.value == old_box_value:
+                continue
+            if box.value_message != "":
+                self.controller.network.add_message(path=box.value_message, value=box.value)
+            if old_box_value == 0 and box.on_message != "":
+                self.controller.network.add_message(path=box.on_message, value=box.value)
+            if box.value == 0 and box.off_message != "":
+                self.controller.network.add_message(path=box.off_message, value=box.value)
+
+    def update_osc_history(self, osc_history: deque):
+        counter = 0
+        for item in osc_history:
+            self.window[f'osc_history_{str(counter)}'].update(item)
+            counter += 1
+        if counter > 9:
+            return    
+
+
+    def draw_audio(self, frequencies: list[int]) -> None:
+        self.canvas_size = self.graph.CanvasSize
+        width = self.canvas_size[0]
+        height = self.canvas_size[1]
+        bar_width = width/len(frequencies)
+        xpos_left = 0
+        self.update_box_values(frequencies, bar_width)
+        self.graph.erase()
+        for box in self.boxes:
+            top_right = (box.position[0] + box.size[0], box.position[1] + box.size[1])
+            fill_color = "#000000"
+            if box.disabled:
+                fill_color = "#505050"
+            self.graph.draw_rectangle(box.position, top_right, fill_color=fill_color)
+        for value in frequencies:
+            self.graph.draw_rectangle((xpos_left, 0), (xpos_left + bar_width, value), fill_color='white', line_color='white')
+            xpos_left += bar_width
+        for box in self.boxes:
+            top_right = (box.position[0] + box.size[0], box.position[1] + box.size[1])
+            border_color = "pink"
+            if not box.selected and not box.disabled:
+                border_color = "#94b8f2"
+            if box.selected and not box.disabled:
+                border_color = "#1756e8"
+            if box.selected and box.disabled:
+                border_color = "#ff0000"
+            if not box.selected and box.disabled:
+                border_color = "#f29894"
+            self.graph.draw_rectangle(box.position, top_right, line_color=border_color)
         for box in self.boxes:
             position = (box.position[0] + box.size[0] + 8, box.position[1] + box.size[1])
             self.graph.draw_text(str(box.description), position, color="#7d2c7c", font=("Arial", 14, "bold"), text_location=sg.TEXT_LOCATION_BOTTOM_LEFT, angle=30)
@@ -225,6 +284,20 @@ class Gui:
         self.window['box_settings_off_message'].update(box.off_message)
         self.window['box_settings_value_message'].update(box.value_message)
 
+    def display_midi_setting_view(self):
+        for i in range(min(len(self.controller.midi.channels), 8)):
+            self.window[f'midi_settings_channel_{str(i+1)}'].update(self.controller.midi.channels[i].name)
+
+    def save_midi_setting_view(self):
+        for i in range(min(len(self.controller.midi.channels), 8)):
+            option_name = self.window[f'midi_settings_channel_{str(i+1)}'].get()
+            if option_name not in self.controller.options.keys():
+                continue
+            option_list = self.controller.options[option_name]
+            self.controller.midi.update_event_mapping(channel_id=i, option_name=option_name, options=option_list)
+        self.display_midi_setting_view()
+
+
     def save_box_setting_view(self):
         selected_box = None
         for box in self.boxes:
@@ -253,8 +326,9 @@ class Gui:
         for box in self.boxes:
             box.selected = box.id == id
 
-    def draw(self, frequencies: list[int]) -> None:
+    def draw(self, frequencies: list[int], osc_history: deque) -> None:
         self.draw_audio(frequencies)
+        self.update_osc_history(osc_history)
             
         event, value = self.window.read(0)
         if event == "__TIMEOUT__":
@@ -291,6 +365,10 @@ class Gui:
             self.save_box_setting_view()
         if event == "cancel-box-settings":
             self.display_box_setting_view()
+        if event == "save-midi-settings":
+            self.save_midi_setting_view()
+        if event == "cancel-midi-settings":
+            self.display_midi_setting_view()
 
     def stop(self) -> None:
         self.window.close()
