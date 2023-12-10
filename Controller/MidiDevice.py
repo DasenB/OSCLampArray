@@ -1,5 +1,6 @@
 from Options import Option, ValueOption, TriggerOption, OnOffOption
 import mido
+import asyncio
 from enum import Enum
 
 class MidiControllerColumn:
@@ -90,7 +91,7 @@ class Midi:
         for channel_column in self.channels:
             self.midi_mapping.update(channel_column.mapping)
 
-    def process_events(self):
+    async def process_events(self):
         device_name = self.find_device_name()
         if self.port is None and self.port_is_open:
             self.port_is_open = False
@@ -103,9 +104,9 @@ class Midi:
         if device_name is not None and not self.port_is_open:
             self.port = mido.open_input(device_name)
             self.port_is_open = True
-            # await asyncio.sleep(2)
-            # for msg in port.iter_pending():
-            #     pass
+            await asyncio.sleep(2)
+            for msg in self.port.iter_pending():
+                pass
         for midi_event in self.port.iter_pending():
             key = None
             if midi_event.type == "control_change":

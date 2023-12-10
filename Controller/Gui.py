@@ -27,10 +27,10 @@ class Gui:
             [
                 sg.Col([[sg.Text("Description")], [sg.Text("On Message")], [sg.Text("Off Message")], [sg.Text("Value Message")]]),
                 sg.Col([
-                    [sg.Input(size=(32, 1), key='box_settings_description')],
-                    [sg.Combo(osc_paths, default_value="", size=(30, 1), key='box_settings_on_message')],
-                    [sg.Combo(osc_paths, default_value="", size=(30, 1), key='box_settings_off_message')], 
-                    [sg.Combo(osc_paths, default_value="", size=(30, 1),  key='box_settings_value_message')]
+                    [sg.Input(size=(22, 1), key='box_settings_description')],
+                    [sg.Combo(osc_paths, default_value="", size=(20, 1), key='box_settings_on_message')],
+                    [sg.Combo(osc_paths, default_value="", size=(20, 1), key='box_settings_off_message')], 
+                    [sg.Combo(osc_paths, default_value="", size=(20, 1),  key='box_settings_value_message')]
                     ], element_justification="right")
             ],
             [sg.Button(button_text="Cancel", key="cancel-box-settings"), sg.Button(button_text="Save", key="save-box-settings")]           
@@ -65,6 +65,19 @@ class Gui:
             ],
             [sg.Button(button_text="Cancel", key="cancel-midi-settings"), sg.Button(button_text="Save", key="save-midi-settings")]           
         ]
+        manual_message_layout = [
+            [
+                sg.Col([
+                    [sg.Text(text="Address")],
+                    [sg.Text(text="Value")]
+                ]), 
+                sg.Col([
+                    [sg.Combo(osc_paths, size=(20, 1), key="manual_message_address")],
+                    [sg.Input(size=(22,1), key="manual_message_value")],
+                ])
+            ],
+            [sg.Col([[sg.Button("Send", size=(29, 1), key="manual_message_send")]])]
+        ]
         osc_history_layout = [
             [sg.Text(text="", key="osc_history_0", pad=((5, 0), (0, 0)), font=("Mono", 10, "normal"))],
             [sg.Text(text="", key="osc_history_1", pad=((5, 0), (0, 0)), font=("Mono", 10, "normal"))],
@@ -84,9 +97,10 @@ class Gui:
                 )
             ],
             [
-                sg.Frame(title="Box Settings", layout=box_settings_layout, size=(370, 235)), 
+                sg.Frame(title="Box Settings", layout=box_settings_layout, size=(290, 235)), 
                 sg.Frame(title="MIDI Settings", layout=midi_settings_layout, size=(470, 235)),
-                sg.Frame(title="OSC History", layout=osc_history_layout, size=(470, 235))
+                sg.Frame(title="Manual Message", layout=manual_message_layout, size=(250, 235)),
+                sg.Frame(title="OSC History", layout=osc_history_layout, size=(240, 235)),
             ]
         ]
         self.window = sg.Window('Window Title', self.layout, element_justification='c', finalize=True, return_keyboard_events=True)
@@ -369,6 +383,15 @@ class Gui:
             self.save_midi_setting_view()
         if event == "cancel-midi-settings":
             self.display_midi_setting_view()
+        if event == "manual_message_send":
+            address = self.window['manual_message_address'].get()
+            value = self.window['manual_message_value'].get()
+            try: 
+                value = int(value)
+                self.controller.network.add_message(path=address, value=value)
+            except Exception as err:
+                pass
+
 
     def stop(self) -> None:
         self.window.close()

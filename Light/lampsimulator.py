@@ -17,9 +17,9 @@ class LampSimulator:
 
         layout = [[   
             sg.Graph(
-                canvas_size=(400, 400),
+                canvas_size=(390, 270),
                 graph_bottom_left=(0, 0),
-                graph_top_right=(400, 400),
+                graph_top_right=(390, 270),
                 background_color='gray',
                 enable_events=True, key='graph'
             )

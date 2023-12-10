@@ -37,28 +37,28 @@ class Effect:
     return (self.r_buffer, self.g_buffer, self.b_buffer)
   
   def handle_event_brightness_r(self, address: str, value: int):
-    value = float(value) / 255
-    if value < 0.0 or value > 1.0:
+    float_value = float(value) / 255
+    if float_value < 0.0 or float_value > 1.0:
       return
-    self.r_brightness = value
+    self.r_brightness = float_value
 
   def handle_event_brightness_g(self, address: str, value: int):
-    value = float(value) / 255
-    if value < 0.0 or value > 1.0:
+    float_value = float(value) / 255
+    if float_value < 0.0 or float_value > 1.0:
       return
-    self.g_brightness = value
+    self.g_brightness = float_value
 
   def handle_event_brightness_b(self, address: str, value: int):
-    value = float(value) / 255
-    if value < 0.0 or value > 1.0:
+    float_value = float(value) / 255
+    if float_value < 0.0 or float_value > 1.0:
       return
-    self.b_brightness = value
+    self.b_brightness = float_value
 
   def handle_event_brightness_master(self, address: str, value: int):
-    value = float(value) / 255
-    if value < 0.0 or value > 1.0:
+    float_value = float(value) / 255
+    if float_value < 0.0 or float_value > 1.0:
       return
-    self.master_brightness = value
+    self.master_brightness = float_value
 
   def setup_brightness_handler(self, dispatcher):
     dispatcher.map(f"{self.name}/red", self.handle_event_brightness_r)
@@ -178,21 +178,21 @@ class WaveEffect(Effect):
     self.last_update = now
 
     a = np.array([self.center_x, self.center_y])
-    index = 0
+    pixel_index = 0
+    for i in range(len(self.pixels)):
+        self.r_buffer[i] = 0
+        self.g_buffer[i] = 0
+        self.b_buffer[i] = 0
     for p in self.pixels:
       for r in self.wave_radii:
         b = np.array([p.x, p.y])
         distance = np.sqrt(np.sum((b-a)**2))
         if distance > (r - self.size) and distance < (r + self.size):
           brightness = (255 / (self.size)) * (distance - r)       
-          self.r_buffer[index] = brightness
-          self.g_buffer[index] = brightness
-          self.b_buffer[index] = brightness
-        else:
-          self.r_buffer[index] = 0
-          self.g_buffer[index] = 0
-          self.b_buffer[index] = 0
-        index += 1
+          self.r_buffer[pixel_index] += min(255, brightness + self.r_buffer[pixel_index])
+          self.g_buffer[pixel_index] += min(255, brightness + self.g_buffer[pixel_index])
+          self.b_buffer[pixel_index] += min(255, brightness + self.b_buffer[pixel_index])
+      pixel_index += 1
     for i in range(0, len(self.wave_radii)):
       self.wave_radii[i] += self.speed * (now - last_update)
     keep_radii = []
@@ -202,8 +202,9 @@ class WaveEffect(Effect):
     self.wave_radii = keep_radii
     super().mix_brightness()
 
-  def trigger(self):
-    self.wave_radii.append(0)
+  def trigger(self, address: str, value: int):
+    if value > 0:
+      self.wave_radii.append(0)
 
   def setup_trigger_handler(self, dispatcher):
     dispatcher.map(f"{self.name}/trigger", self.trigger)

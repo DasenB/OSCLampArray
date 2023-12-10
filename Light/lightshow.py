@@ -36,7 +36,7 @@ class LightShow:
         effect.update()
 
       priority = -1
-      selected_buffers: list[list[list[int], list[int], list[int]]] = []
+      selected_buffers: list[tuple[list[int], list[int], list[int]]] = []
       for effect in self.effects:
         if effect.priority > priority:
           selected_buffers = []

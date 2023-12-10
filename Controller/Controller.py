@@ -93,7 +93,7 @@ class Controller:
     async def midi_loop(self):
         while True:
             await asyncio.sleep(0.001)
-            self.midi.process_events()
+            await self.midi.process_events()
 
 
         
