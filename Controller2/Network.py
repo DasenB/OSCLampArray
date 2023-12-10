@@ -30,10 +30,11 @@ class Network:
         bundle = osc_bundle_builder.OscBundleBuilder(osc_bundle_builder.IMMEDIATELY)
         for path in self.changes.keys():
             message = osc_message_builder.OscMessageBuilder(address=path)
-            message.add_arg(int(self.changes[path]))
+            value = int(self.changes[path])
+            message.add_arg(value)
             message = message.build()
             bundle.add_content(message)
-            self.history.append(path + " " + str(self.changes[path]))
+            self.history.append(path + " " + str(value))
         bundle = bundle.build()
         self.udp.send(bundle)
         self.last_send_time = current_time

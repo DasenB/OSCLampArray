@@ -84,8 +84,8 @@ for i in range(len(boxes)):
     boxes[i].position = (boxes[i].position[0] * i + 20, boxes[i].position[1])
 
 c = Controller(
-    lamp_address="0.0.0.0", 
-    lamp_port=5000, 
+    lamp_address="10.0.0.110", 
+    lamp_port=8000, 
     midi_device=MidiDevice.NOVATION_LAUNCHCONTROL_XL, 
     boxes=boxes, 
     options=option_columns
