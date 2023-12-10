@@ -21,24 +21,14 @@ class Firmware:
   def update_led_count(self) -> int:
     self.led_count = int(sys.stdin.buffer.read(7))
     return self.led_count
-
-  def read_led_buffer(self) -> bytes:
-    data = sys.stdin.buffer.read(self.led_count * 3)
-    return data
   
+  # It takes around 0.042 seconds to process one frame
   def run(self):
-    # counter = 0
     while True:
-      # start_time = time.time_ns()
-      data = self.read_led_buffer()
+      data = sys.stdin.buffer.read(self.led_count * 3)
       for i in range(self.led_count):
         self.neopixel[i] = (data[i], data[i+1], data[i+2])
       self.neopixel.write()
-      # end_time =  time.time_ns()
-      # duration = float(end_time - start_time)/1000000000
-      # print(str(counter) + ": " + str(duration))
-      # counter += 1
-      # # It takes around 0.042 seconds to process one frame
 
 
 firmware = Firmware(led_count=249, data_pin=15)
