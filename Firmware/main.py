@@ -1,10 +1,7 @@
 from machine import Pin
-from time import sleep
 from neopixel import NeoPixel
 import sys
-import select
-import time
-from collections import deque
+
 
 class Firmware:
 
