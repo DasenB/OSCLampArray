@@ -4,7 +4,7 @@ from enum import Enum
 
 class MidiControllerColumn:
     midi_ids: list[int]
-    control_options: list[Option]
+    control_options: list[Option]|None
     mapping: dict[int, Option]
     name: str
 

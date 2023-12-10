@@ -36,31 +36,35 @@ class Effect:
   def get_buffer(self) -> tuple[list[int], list[int], list[int]]:
     return (self.r_buffer, self.g_buffer, self.b_buffer)
   
-  def handle_event_brightness_r(self, address: str, value: float):
+  def handle_event_brightness_r(self, address: str, value: int):
+    value = float(value) / 255
     if value < 0.0 or value > 1.0:
       return
     self.r_brightness = value
 
-  def handle_event_brightness_g(self, address: str, value: float):
+  def handle_event_brightness_g(self, address: str, value: int):
+    value = float(value) / 255
     if value < 0.0 or value > 1.0:
       return
     self.g_brightness = value
 
-  def handle_event_brightness_b(self, address: str, value: float):
+  def handle_event_brightness_b(self, address: str, value: int):
+    value = float(value) / 255
     if value < 0.0 or value > 1.0:
       return
     self.b_brightness = value
 
-  def handle_event_brightness_master(self, address: str, value: float):
+  def handle_event_brightness_master(self, address: str, value: int):
+    value = float(value) / 255
     if value < 0.0 or value > 1.0:
       return
     self.master_brightness = value
 
   def setup_brightness_handler(self, dispatcher):
-    dispatcher.map(f"/{self.name}/brightness/r", self.handle_event_brightness_r)
-    dispatcher.map(f"/{self.name}/brightness/g", self.handle_event_brightness_g)
-    dispatcher.map(f"/{self.name}/brightness/b", self.handle_event_brightness_b)
-    dispatcher.map(f"/{self.name}/brightness/master", self.handle_event_brightness_master)
+    dispatcher.map(f"{self.name}/red", self.handle_event_brightness_r)
+    dispatcher.map(f"{self.name}/green", self.handle_event_brightness_g)
+    dispatcher.map(f"{self.name}/blue", self.handle_event_brightness_b)
+    dispatcher.map(f"{self.name}/master", self.handle_event_brightness_master)
 
   def setup_dispatcher(self, dispatcher):
     print(f"Warning: {str(self)} does not overwrite function 'setup_dispatcher'")
@@ -202,7 +206,7 @@ class WaveEffect(Effect):
     self.wave_radii.append(0)
 
   def setup_trigger_handler(self, dispatcher):
-    dispatcher.map(f"/{self.name}/trigger", self.trigger)
+    dispatcher.map(f"{self.name}/trigger", self.trigger)
 
   def setup_dispatcher(self, dispatcher):
     super().setup_brightness_handler(dispatcher)

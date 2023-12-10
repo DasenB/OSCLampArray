@@ -32,7 +32,6 @@ class LightShow:
 
   async def run(self):
     while True:
-
       for effect in self.effects:
         effect.update()
 

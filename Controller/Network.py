@@ -3,14 +3,16 @@ import time
 from collections import deque 
 
 class Network:
-    udp: udp_client
+    udp_clients: list[udp_client]
     changes: dict[str, int]
     batch_duration_s: float
     last_send_time: float
     history: deque
 
-    def __init__(self, ip: str, port: int, batch_duration_s: float) -> None:
-        self.udp = udp_client.UDPClient(ip, port)
+    def __init__(self, ips: str, port: int, batch_duration_s: float) -> None:
+        self.udp_clients = []
+        for ip in ips:
+            self.udp_clients.append(udp_client.UDPClient(ip, port))
         self.changes = {}
         self.batch_duration_s = batch_duration_s
         self.last_send_time = time.time()
@@ -36,6 +38,7 @@ class Network:
             bundle.add_content(message)
             self.history.append(path + " " + str(value))
         bundle = bundle.build()
-        self.udp.send(bundle)
+        for udp in self.udp_clients:
+            udp.send(bundle)
         self.last_send_time = current_time
         self.changes = {}

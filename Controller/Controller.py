@@ -27,30 +27,16 @@ class Controller:
     audio: Audio
 
 
-    def __init__(self, lamp_address: str, lamp_port:int, midi_device: MidiDevice, boxes: list[Box], options: dict[str, list[ValueOption, ValueOption, ValueOption, ValueOption, TriggerOption|OnOffOption, TriggerOption|OnOffOption]]) -> None:
+    def __init__(self, lamp_addresses: list[str], lamp_port:int, midi_device: MidiDevice, boxes: list[Box], options: dict[str, list[ValueOption, ValueOption, ValueOption, ValueOption, TriggerOption|OnOffOption, TriggerOption|OnOffOption]]) -> None:
         
         self.options = options
         self.boxes = boxes
 
         self.midi = Midi(controller=self, device_description=midi_device, options=options)
-        self.network = Network(ip=lamp_address, port=lamp_port, batch_duration_s=1.0/20.0)
+        self.network = Network(ips=lamp_addresses, port=lamp_port, batch_duration_s=1.0/20.0)
         self.gui = Gui(controller=self)
         self.audio = Audio()
 
-    # def process_midi_event(self, midi_event: mido.Message):
-    #     key = None
-    #     if midi_event.type == "control_change":
-    #         key = midi_event.control
-    #     elif midi_event.type == "note_on" or midi_event.type == "note_off":
-    #         key = midi_event.note
-    #     else:
-    #         return
-    #     if key not in self.midi_mapping:
-    #         return
-    #     option_handler = self.midi_mapping[key]
-    #     option_handler.update(midi_event)
-    #     self.network.add_message(path=option_handler.id, value=option_handler.value * 2)
-        # print(option_handler.id + " " + str(option_handler.value))
 
     def run(self):
         self.audio.start()
@@ -108,36 +94,6 @@ class Controller:
         while True:
             await asyncio.sleep(0.001)
             self.midi.process_events()
-
-        port_is_open = False
-        self.midi_port = None
-        device_name = self.midi_device["name_prefix"] + self.midi_device["name_suffix"]
-        for name in mido.get_ioport_names():
-            if name.startswith(self.midi_device["name_prefix"]) and name.endswith(self.midi_device["name_suffix"]):
-                device_name = name
-                break
-
-        while True:
-            await asyncio.sleep(0.001)
-            midi_device_connected = device_name in mido.get_ioport_names()
-            if self.midi_port is None and port_is_open:
-                port_is_open = False
-            if not midi_device_connected and port_is_open:
-                self.midi_port.close()
-                self.midi_port = None
-                port_is_open = False
-            if not midi_device_connected and not port_is_open:
-                continue
-            if midi_device_connected and not port_is_open:
-                self.midi_port = mido.open_input(device_name)
-                port_is_open = True
-                # await asyncio.sleep(2)
-                # for msg in port.iter_pending():
-                #     pass
-            for midi_event in self.midi_port.iter_pending():
-                self.process_midi_event(midi_event)
-
-        
 
 
         

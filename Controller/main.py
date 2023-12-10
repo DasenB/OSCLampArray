@@ -28,13 +28,13 @@ option_columns = {
         TriggerOption("/strobe/trigger", description="Strobe Trigger"),
         OnOffOption("/strobe/mute", description="Strobe Mute"),
     ],
-    "Glow": [
-        ValueOption("/glow/red", description="Glow R"),
-        ValueOption("/glow/green", description="Glow G"),
-        ValueOption("/glow/blue", description="Glow B"),
-        ValueOption("/glow/master", description="Glow Brightness"),
-        TriggerOption("/glow/trigger", description="Glow Trigger"),
-        OnOffOption("/glow/mute", description="Glow Mute"),
+    "Color": [
+        ValueOption("/color/red", description="Color R"),
+        ValueOption("/color/green", description="Color G"),
+        ValueOption("/color/blue", description="Color B"),
+        ValueOption("/color/master", description="Color Brightness"),
+        TriggerOption("/color/trigger", description="Color Trigger"),
+        OnOffOption("/color/mute", description="Color Mute"),
     ],
     "Perlin": [
         ValueOption("/perlin/red", description="Perlin R"),
@@ -84,7 +84,7 @@ for i in range(len(boxes)):
     boxes[i].position = (boxes[i].position[0] * i + 20, boxes[i].position[1])
 
 c = Controller(
-    lamp_address="10.0.0.110", 
+    lamp_addresses=["0.0.0.0", "10.0.0.110"], 
     lamp_port=8000, 
     midi_device=MidiDevice.NOVATION_LAUNCHCONTROL_XL, 
     boxes=boxes, 
