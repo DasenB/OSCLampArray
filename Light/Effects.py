@@ -1,4 +1,4 @@
-from pixel import Pixel
+from Pixel import Pixel
 import time
 import copy
 import random

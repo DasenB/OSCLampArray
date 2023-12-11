@@ -1,10 +1,17 @@
-from pixel import Pixel
+from Pixel import Pixel
 import PySimpleGUI as sg
 
 
 class LampSimulator:
 
-    def __init__(self) -> list[Pixel]:
+    _grap: sg.Graph
+    width: int
+    height: int
+    _pixels: list[Pixel]
+    _window: sg.Window
+    _zoom: float
+
+    def __init__(self):
         self.width = 21
         self.height = 14
         pixel_spacing = 8.5
@@ -21,14 +28,15 @@ class LampSimulator:
                 graph_bottom_left=(0, 0),
                 graph_top_right=(390, 270),
                 background_color='gray',
-                enable_events=True, key='graph'
+                enable_events=True,
+                key='graph'
             )
         ]]
         self._window = sg.Window('Light Simulator', layout, element_justification='c', finalize=True)
         self._graph = self._window['graph'] 
         self._zoom = 2
 
-    def update(self, pixels: Pixel) -> None:
+    def update(self, pixels: list[Pixel]) -> None:
         self._graph.erase()
         for pixel in pixels:
             center = (self._zoom * pixel.x + self._zoom * 10, self._zoom * pixel.y + self._zoom * 10)

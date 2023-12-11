@@ -1,8 +1,9 @@
-from lampsimulator import LampSimulator
-from lightshow import LightShow
-from effects import SparkleEffect, ColorEffect, StrobeEffect, WaveEffect
+from LampSimulator import LampSimulator
+from LightShow import LightShow
+from Effects import SparkleEffect, ColorEffect, StrobeEffect, WaveEffect
 import asyncio
 from pythonosc.osc_server import AsyncIOOSCUDPServer
+from Lamp import Lamp
 
 
 # for i in range(0, 14):
@@ -14,7 +15,8 @@ from pythonosc.osc_server import AsyncIOOSCUDPServer
 
 
 async def LightshowTask():
-  lamp = LampSimulator()
+  # lamp = LampSimulator()
+  lamp = Lamp(serial_port="/dev/serial/by-id/usb-MicroPython_Board_in_FS_mode_e6616407e327a226-if00")
   lightshow = LightShow(lamp=lamp)
   sparkle = SparkleEffect(name="/sparkle", pixels=lamp._pixels)
   color = ColorEffect(name="/color", pixels=lamp._pixels)

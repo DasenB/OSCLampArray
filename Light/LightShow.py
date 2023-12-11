@@ -1,6 +1,7 @@
-from pixel import Pixel
-from effects import Effect
-from lampsimulator import LampSimulator
+from Pixel import Pixel
+from Effects import Effect
+from LampSimulator import LampSimulator
+from Lamp import Lamp
 from pythonosc.dispatcher import Dispatcher
 import asyncio
 import numpy as np
@@ -8,11 +9,11 @@ import numpy as np
 class LightShow:
   
   pixels: list[Pixel]
-  lamp: LampSimulator
+  lamp: Lamp|LampSimulator
   effects: list[Effect]
   dispatcher: Dispatcher
 
-  def __init__(self, lamp: LampSimulator):
+  def __init__(self, lamp: Lamp|LampSimulator):
     self.lamp = lamp
     self.pixels = self.lamp._pixels
     self.effects = []
