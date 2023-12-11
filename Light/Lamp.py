@@ -20,15 +20,16 @@ class Lamp:
                 pixels.append(pixel)
         self._pixels = pixels
         self.data = bytearray([0] * len(pixels) * 3)
-        self.serial_port.write(str(len(self._pixels)).zfill(7).encode())
 
     def update(self, pixels: list[Pixel]) -> None:
         i = 0
         for pixel in pixels:
             pixel_bytes = bytes([pixel.r, pixel.g, pixel.b])
-            self.data[i] = pixel_bytes[0]
-            self.data[i+1] = pixel_bytes[1]
-            self.data[i+2] = pixel_bytes[2]
+            # pixel_bytes = bytes([0, 0, 100])
+            print(str(pixel.r) + "/" + str(pixel.g) + "/" + str(pixel.b) )
+            self.data[3*i] = pixel_bytes[0]
+            self.data[3*i+1] = pixel_bytes[1]
+            self.data[3*i+2] = pixel_bytes[2]
             i += 1
         self.serial_port.write(self.data)
             
