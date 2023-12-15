@@ -36,14 +36,6 @@ option_columns = {
         TriggerOption("/color/trigger", description="Color Trigger"),
         OnOffOption("/color/mute", description="Color Mute"),
     ],
-    "Perlin": [
-        ValueOption("/perlin/red", description="Perlin R"),
-        ValueOption("/perlin/green", description="Perlin G"),
-        ValueOption("/perlin/blue", description="Perlin B"),
-        ValueOption("/perlin/master", description="Perlin Brightness"),
-        TriggerOption("/perlin/trigger", description="Perlin Trigger"),
-        OnOffOption("/perlin/mute", description="Perlin Mute"),
-    ],
     "Sparkle": [
         ValueOption("/sparkle/red", description="Sparkle R"),
         ValueOption("/sparkle/green", description="Sparkle G"),
@@ -67,6 +59,14 @@ option_columns = {
         ValueOption("/jumper2/master", description="Jumper_2 Brightness"),
         TriggerOption("/jumper2/trigger", description="Jumper_2 Trigger"),
         OnOffOption("/jumper2/mute", description="Jumper_2 Mute"),
+    ],
+    "Bars": [
+        ValueOption("/bars/red", description="Bars R"),
+        ValueOption("/bars/green", description="Bars G"),
+        ValueOption("/bars/blue", description="Bars B"),
+        ValueOption("/bars/value", description="Bars Brightness"),
+        TriggerOption("/bars/trigger", description="Bars Trigger"),
+        OnOffOption("/bars/mute", description="Bars Mute"),
     ]
 }
 

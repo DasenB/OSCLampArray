@@ -42,5 +42,5 @@ class Firmware:
       gc.collect()
 
 
-firmware = Firmware(data_pin=14)
+firmware = Firmware(data_pin=14, led_count=2*14*7)
 firmware.run()

@@ -31,7 +31,44 @@ class LightShow:
     effect.setup_dispatcher(self.dispatcher)
     self.effects.append(effect)
 
+  async def test_frame_syncronization(self):
+    while True:
+      for pixel in self.pixels:
+        pixel.r = 255
+        pixel.g = 0
+        pixel.b = 0
+      self.lamp.update(pixels=self.pixels)
+      await asyncio.sleep(2)
+      for pixel in self.pixels:
+        pixel.r = 0
+        pixel.g = 255
+        pixel.b = 0
+      self.lamp.update(pixels=self.pixels)
+      await asyncio.sleep(2)
+      for pixel in self.pixels:
+        pixel.r = 0
+        pixel.g = 0
+        pixel.b = 255
+      self.lamp.update(pixels=self.pixels)
+      await asyncio.sleep(2)
+
+  async def test_pixel_order(self):
+    counter = 0
+    while True:
+      for i in range(len(self.pixels)):
+        value = 0
+        if i == counter:
+          print(str(i) + ": " + str(self.pixels[i].x) + "/" + str(self.pixels[i].y))
+          value = 255
+        self.pixels[i].r = value
+        self.pixels[i].g = value
+        self.pixels[i].b = value
+      self.lamp.update(pixels=self.pixels)
+      counter += 1
+      await asyncio.sleep(0.1)
+
   async def run(self):
+        
     while True:
       for effect in self.effects:
         effect.update()

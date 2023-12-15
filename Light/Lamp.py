@@ -10,12 +10,16 @@ class Lamp:
     def __init__(self, serial_port: str):
         self.port_name = serial_port
         self.serial_port = serial.Serial(self.port_name)
-        self.width = 21
+        self.width = 14
         self.height = 14
         pixel_spacing = 8.5
         pixels = []
         for x in range(0, self.width):
-            for y in range(0, self.height):
+            y_range = range(0, self.height)
+            board = (x - (x % 7)) / 7
+            if ((x - (board * 7)) % 2) == 1:
+                y_range = reversed(y_range)
+            for y in y_range:
                 pixel = Pixel(x=x*pixel_spacing, y=y*pixel_spacing, diameter=4)
                 pixels.append(pixel)
         self._pixels = pixels
@@ -26,7 +30,7 @@ class Lamp:
         for pixel in pixels:
             pixel_bytes = bytes([pixel.r, pixel.g, pixel.b])
             # pixel_bytes = bytes([0, 0, 100])
-            print(str(pixel.r) + "/" + str(pixel.g) + "/" + str(pixel.b) )
+            # print(str(pixel.r) + "/" + str(pixel.g) + "/" + str(pixel.b) )
             self.data[3*i] = pixel_bytes[0]
             self.data[3*i+1] = pixel_bytes[1]
             self.data[3*i+2] = pixel_bytes[2]

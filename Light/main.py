@@ -1,6 +1,6 @@
 from LampSimulator import LampSimulator
 from LightShow import LightShow
-from Effects import SparkleEffect, ColorEffect, StrobeEffect, WaveEffect
+from Effects import SparkleEffect, ColorEffect, StrobeEffect, WaveEffect, JumperEffect, BarEffect
 import asyncio
 from pythonosc.osc_server import AsyncIOOSCUDPServer
 from Lamp import Lamp
@@ -23,9 +23,9 @@ async def LightshowTask():
   strobe = StrobeEffect(name="/strobe", pixels=lamp._pixels)
   wave1 = WaveEffect(name="/wave1", pixels=lamp._pixels)
   wave2 = WaveEffect(name="/wave2", pixels=lamp._pixels)
-  perlin = WaveEffect(name="/perlin", pixels=lamp._pixels)
-  jumper1 = WaveEffect(name="/jumper1", pixels=lamp._pixels)
-  jumper2 = WaveEffect(name="/jumper2", pixels=lamp._pixels)
+  perlin = BarEffect(name="/bars", pixels=lamp._pixels)
+  jumper1 = JumperEffect(name="/jumper1", pixels=lamp._pixels)
+  jumper2 = JumperEffect(name="/jumper2", pixels=lamp._pixels)
   lightshow.add_effect(effect=sparkle)
   lightshow.add_effect(effect=color)
   lightshow.add_effect(effect=strobe)

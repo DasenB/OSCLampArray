@@ -46,7 +46,7 @@ class MidiDevice(Enum):
             MidiControllerColumn(midi_ids=[17, 33, 53, 81, 57, 89], control_options=None),
             MidiControllerColumn(midi_ids=[18, 34, 54, 82, 58, 90], control_options=None),
             MidiControllerColumn(midi_ids=[19, 35, 55, 83, 59, 91], control_options=None),
-            MidiControllerColumn(midi_ids=[20, 36, 56, 84, 60, 91], control_options=None),
+            MidiControllerColumn(midi_ids=[20, 36, 56, 84, 60, 92], control_options=None),
         ],
         "extra_buttons": [104, 105, 106, 107, 108]
     }
@@ -113,6 +113,7 @@ class Midi:
                 key = midi_event.control
             elif midi_event.type == "note_on" or midi_event.type == "note_off":
                 key = midi_event.note
+                print(key)
             else:
                 return
             if key not in self.midi_mapping:
